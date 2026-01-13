@@ -10,8 +10,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     oracledb.fetchAsString = [];
     
     this.pool = await oracledb.createPool({
-      user: process.env.ORACLE_USER || 'seu_usuario',
-      password: process.env.ORACLE_PASSWORD || 'sua_senha',
+      user: process.env.ORACLE_USER || 'VENDA_APP',
+      password: process.env.ORACLE_PASSWORD || '123',
       connectString: process.env.ORACLE_CONNECTION || 'localhost:1521/XEPDB1',
       poolMin: 2,
       poolMax: 10,
