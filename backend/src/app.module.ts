@@ -7,6 +7,7 @@ import { VendedorModule } from './vendedor/vendedor.module';
 import { ClienteModule } from './cliente/cliente.module';
 import { ProdutoModule } from './produto/produto.module';
 import { VendaOnlineModule } from './venda-online/venda-online.module';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -22,5 +23,6 @@ import { VendaOnlineModule } from './venda-online/venda-online.module';
     ProdutoModule,
     VendaOnlineModule,
   ],
+  controllers: [AppController],
 })
 export class AppModule {}

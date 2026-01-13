@@ -16,6 +16,7 @@ const vendedor_module_1 = require("./vendedor/vendedor.module");
 const cliente_module_1 = require("./cliente/cliente.module");
 const produto_module_1 = require("./produto/produto.module");
 const venda_online_module_1 = require("./venda-online/venda-online.module");
+const app_controller_1 = require("./app.controller");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,6 +35,7 @@ exports.AppModule = AppModule = __decorate([
             produto_module_1.ProdutoModule,
             venda_online_module_1.VendaOnlineModule,
         ],
+        controllers: [app_controller_1.AppController],
     })
 ], AppModule);
 //# sourceMappingURL=app.module.js.map

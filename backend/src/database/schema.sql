@@ -74,7 +74,7 @@ CREATE TABLE venda_online_produto (
 -- Inserir usuário de teste (senha: admin123)
 -- Hash gerado com bcrypt, rounds=10
 INSERT INTO usuario (usuario, senha_hash, nome) 
-VALUES ('admin', '$2b$10$xQHJZ5z5YqGxR5m5HEXKouVJhF7Y8vqK4C7DZpQxN3vN2Z5YqGxR5', 'Administrador');
+VALUES ('admin', '$2b$10$Ner94np7czfNE/k2R7Dau.umoBNLUFLLj5veHXM1GrBZ1WdsHL3Uu', 'Administrador');
 
 -- Inserir vendedores
 INSERT INTO vendedor (nome) VALUES ('João Silva');

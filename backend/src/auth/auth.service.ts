@@ -7,8 +7,8 @@ import { LoginDto } from './dto/login.dto';
 @Injectable()
 export class AuthService {
   constructor(
-    private db: DatabaseService,
-    private jwtService: JwtService,
+    private readonly db: DatabaseService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -24,10 +24,24 @@ export class AuthService {
       throw new UnauthorizedException('Usuário ou senha inválidos');
     }
 
-    const user = result.rows[0];
-    
+    const row = result.rows[0] as Record<string, unknown>;
+
+    const senhaHash: unknown = row.SENHA_HASH ?? row.senha_hash;
+    const userId: unknown = row.ID ?? row.id;
+    const userUsuario: unknown = row.USUARIO ?? row.usuario;
+    const userNome: unknown = row.NOME ?? row.nome;
+
+    if (typeof senhaHash !== 'string') {
+      throw new UnauthorizedException('Usuário ou senha inválidos');
+    }
+
     // Verificar senha
-    const senhaValida = await bcrypt.compare(senha, user.SENHA_HASH);
+    let senhaValida = false;
+    try {
+      senhaValida = await bcrypt.compare(senha, senhaHash);
+    } catch {
+      senhaValida = false;
+    }
     
     if (!senhaValida) {
       throw new UnauthorizedException('Usuário ou senha inválidos');
@@ -35,17 +49,17 @@ export class AuthService {
 
     // Gerar JWT
     const payload = { 
-      sub: user.ID, 
-      usuario: user.USUARIO,
-      nome: user.NOME 
+      sub: userId,
+      usuario: userUsuario,
+      nome: userNome,
     };
     
     return {
       access_token: this.jwtService.sign(payload),
       usuario: {
-        id: user.ID,
-        usuario: user.USUARIO,
-        nome: user.NOME,
+        id: userId,
+        usuario: userUsuario,
+        nome: userNome,
       },
     };
   }

@@ -25,22 +25,35 @@ let AuthService = class AuthService {
         if (!result.rows || result.rows.length === 0) {
             throw new common_1.UnauthorizedException('Usuário ou senha inválidos');
         }
-        const user = result.rows[0];
-        const senhaValida = await bcrypt.compare(senha, user.SENHA_HASH);
+        const row = result.rows[0];
+        const senhaHash = row.SENHA_HASH ?? row.senha_hash;
+        const userId = row.ID ?? row.id;
+        const userUsuario = row.USUARIO ?? row.usuario;
+        const userNome = row.NOME ?? row.nome;
+        if (typeof senhaHash !== 'string') {
+            throw new common_1.UnauthorizedException('Usuário ou senha inválidos');
+        }
+        let senhaValida = false;
+        try {
+            senhaValida = await bcrypt.compare(senha, senhaHash);
+        }
+        catch {
+            senhaValida = false;
+        }
         if (!senhaValida) {
             throw new common_1.UnauthorizedException('Usuário ou senha inválidos');
         }
         const payload = {
-            sub: user.ID,
-            usuario: user.USUARIO,
-            nome: user.NOME
+            sub: userId,
+            usuario: userUsuario,
+            nome: userNome,
         };
         return {
             access_token: this.jwtService.sign(payload),
             usuario: {
-                id: user.ID,
-                usuario: user.USUARIO,
-                nome: user.NOME,
+                id: userId,
+                usuario: userUsuario,
+                nome: userNome,
             },
         };
     }

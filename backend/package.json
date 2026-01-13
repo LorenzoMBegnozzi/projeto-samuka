@@ -6,7 +6,8 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "build": "nest build",
-    "start:prod": "node dist/main"
+    "start:prod": "node dist/main",
+    "reset:admin": "node scripts/reset-admin-password.js"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
