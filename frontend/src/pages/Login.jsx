@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import '../styles/login.css';
 
 export default function Login() {
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
   const [carregando, setCarregando] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -18,7 +19,7 @@ export default function Login() {
 
     try {
       await login(usuario, senha);
-      navigate('/venda');
+      navigate('/home', { replace: true });
     } catch (error) {
       setErro(error.response?.data?.message || 'Erro ao fazer login');
     } finally {
@@ -27,18 +28,16 @@ export default function Login() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-    }}>
-      <div className="card" style={{ maxWidth: '400px', width: '100%', margin: '20px' }}>
-        <h1 style={{ textAlign: 'center', marginBottom: '24px', color: '#333' }}>
-          Sistema de Vendas
-        </h1>
-        
+    <div className="login-page">
+      <div className="login-card">
+        <div className="login-brand">
+          <div className="login-logo">SV</div>
+          <div>
+            <h1>Sistema de Vendas</h1>
+            <p>Acesse sua conta para continuar</p>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Usuário</label>
@@ -64,23 +63,25 @@ export default function Login() {
             />
           </div>
 
-          {erro && <div className="error">{erro}</div>}
+          {erro && <div className="alert alert-error">{erro}</div>}
 
-          <button 
-            type="submit" 
-            className="btn-primary" 
-            style={{ width: '100%', marginTop: '16px' }}
+          <button
+            type="submit"
+            className="btn btn-primary btn-lg"
+            style={{ width: '100%' }}
             disabled={carregando}
           >
             {carregando ? 'Entrando...' : 'Entrar'}
           </button>
         </form>
 
-        <div style={{ marginTop: '20px', padding: '12px', background: '#f8f9fa', borderRadius: '4px' }}>
-          <small style={{ color: '#666' }}>
-            <strong>Usuário de teste:</strong><br />
-            Usuário: admin<br />
-            Senha: admin123
+        <div className="login-demo">
+          <small>
+            <strong>Usuário de teste</strong>
+            <br />
+            Usuário: <strong>admin</strong>
+            <br />
+            Senha: <strong>admin123</strong>
           </small>
         </div>
       </div>

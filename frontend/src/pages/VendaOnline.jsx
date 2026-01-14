@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../services/api';
+import '../styles/venda.css';
 
 export default function VendaOnline() {
   const { usuario, logout } = useAuth();
@@ -11,16 +12,16 @@ export default function VendaOnline() {
   const [vendedores, setVendedores] = useState([]);
   const [clientes, setClientes] = useState([]);
   const [produtos, setProdutos] = useState([]);
-  
+
   const [vendedorSelecionado, setVendedorSelecionado] = useState('');
   const [clienteSelecionado, setClienteSelecionado] = useState('');
   const [dividaCliente, setDividaCliente] = useState(0);
-  
+
   const [itens, setItens] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState('');
   const [quantidade, setQuantidade] = useState(1);
   const [desconto, setDesconto] = useState(0);
-  
+
   const [carregando, setCarregando] = useState(false);
   const [mensagem, setMensagem] = useState('');
   const [erro, setErro] = useState('');
@@ -37,7 +38,7 @@ export default function VendaOnline() {
         api.get('/clientes'),
         api.get('/produtos'),
       ]);
-      
+
       setVendedores(vendRes.data);
       setClientes(cliRes.data);
       setProdutos(prodRes.data);
@@ -50,7 +51,7 @@ export default function VendaOnline() {
   const handleClienteChange = async (clienteId) => {
     setClienteSelecionado(clienteId);
     setDividaCliente(0);
-    
+
     if (clienteId) {
       try {
         const response = await api.get(`/clientes/${clienteId}/divida`);
@@ -61,6 +62,10 @@ export default function VendaOnline() {
     }
   };
 
+  const produtoAtual = useMemo(() => {
+    return produtos.find((p) => p.id === parseInt(produtoSelecionado));
+  }, [produtos, produtoSelecionado]);
+
   // Adicionar item à lista
   const adicionarItem = () => {
     if (!produtoSelecionado || quantidade <= 0) {
@@ -68,13 +73,18 @@ export default function VendaOnline() {
       return;
     }
 
-    const produto = produtos.find(p => p.id === parseInt(produtoSelecionado));
-    
+    const produto = produtos.find((p) => p.id === parseInt(produtoSelecionado));
     if (!produto) return;
 
     // Validar desconto
     if (desconto > 0 && !produto.permite_desconto) {
       setErro('Este produto não permite desconto');
+      return;
+    }
+
+    // (Opcional, mas recomendado) Não deixar desconto maior que o preço
+    if (desconto > produto.preco_venda) {
+      setErro('Desconto não pode ser maior que o preço do produto');
       return;
     }
 
@@ -125,7 +135,7 @@ export default function VendaOnline() {
       const payload = {
         vendedor_id: parseInt(vendedorSelecionado),
         cliente_id: parseInt(clienteSelecionado),
-        itens: itens.map(item => ({
+        itens: itens.map((item) => ({
           produto_id: item.produto_id,
           quantidade: item.quantidade,
           preco_unitario: item.preco_unitario,
@@ -134,9 +144,9 @@ export default function VendaOnline() {
       };
 
       await api.post('/venda-online', payload);
-      
+
       setMensagem('Venda registrada com sucesso!');
-      
+
       // Limpar formulário
       setTimeout(() => {
         setVendedorSelecionado('');
@@ -144,8 +154,7 @@ export default function VendaOnline() {
         setDividaCliente(0);
         setItens([]);
         setMensagem('');
-      }, 2000);
-      
+      }, 1500);
     } catch (error) {
       setErro(error.response?.data?.message || 'Erro ao registrar venda');
     } finally {
@@ -158,16 +167,22 @@ export default function VendaOnline() {
     navigate('/');
   };
 
-  const produtoAtual = produtos.find(p => p.id === parseInt(produtoSelecionado));
-
   return (
-    <div>
+    <div className="app-shell">
       <div className="header">
         <div className="header-content">
-          <h2>Sistema de Vendas Online</h2>
-          <div>
-            <span style={{ marginRight: '16px' }}>Olá, {usuario?.nome}</span>
-            <button className="btn-danger" onClick={handleLogout}>
+          <div className="header-left">
+            <h2>Sistema de Vendas Online</h2>
+            <small className="header-subtitle">Registre vendas, controle itens e descontos</small>
+          </div>
+
+          <div className="header-right">
+            <span className="user-pill">
+              <span className="user-dot" />
+              Olá, <strong>{usuario?.nome}</strong>
+            </span>
+
+            <button className="btn btn-ghost" onClick={handleLogout}>
               Sair
             </button>
           </div>
@@ -175,61 +190,74 @@ export default function VendaOnline() {
       </div>
 
       <div className="container">
-        {/* Seção Vendedor */}
-        <div className="card">
-          <h3>Vendedor</h3>
-          <div className="form-group">
-            <label>Selecione o vendedor</label>
-            <select 
-              value={vendedorSelecionado}
-              onChange={(e) => setVendedorSelecionado(e.target.value)}
-            >
-              <option value="">Selecione...</option>
-              {vendedores.map(v => (
-                <option key={v.id} value={v.id}>{v.nome}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+        {/* Topo - Vendedor e Cliente em grid */}
+        <div className="grid-2">
+          {/* Seção Vendedor */}
+          <div className="card">
+            <div className="card-title">
+              <h3>Vendedor</h3>
+              <span className="badge badge-info">Obrigatório</span>
+            </div>
 
-        {/* Seção Cliente */}
-        <div className="card">
-          <h3>Cliente</h3>
-          <div className="form-group">
-            <label>Selecione o cliente</label>
-            <select 
-              value={clienteSelecionado}
-              onChange={(e) => handleClienteChange(e.target.value)}
-            >
-              <option value="">Selecione...</option>
-              {clientes.map(c => (
-                <option key={c.id} value={c.id}>{c.nome}</option>
-              ))}
-            </select>
-            
-            {clienteSelecionado && (
-              <span className="divida-badge">
-                Dívida: R$ {dividaCliente.toFixed(2)}
-              </span>
-            )}
+            <div className="form-group">
+              <label>Selecione o vendedor</label>
+              <select value={vendedorSelecionado} onChange={(e) => setVendedorSelecionado(e.target.value)}>
+                <option value="">Selecione...</option>
+                {vendedores.map((v) => (
+                  <option key={v.id} value={v.id}>
+                    {v.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Seção Cliente */}
+          <div className="card">
+            <div className="card-title">
+              <h3>Cliente</h3>
+              <span className="badge badge-info">Obrigatório</span>
+            </div>
+
+            <div className="form-group">
+              <label>Selecione o cliente</label>
+
+              <div className="row-inline">
+                <select value={clienteSelecionado} onChange={(e) => handleClienteChange(e.target.value)}>
+                  <option value="">Selecione...</option>
+                  {clientes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.nome}
+                    </option>
+                  ))}
+                </select>
+
+                {clienteSelecionado && (
+                  <span className="divida-badge">
+                    Dívida: <strong>R$ {dividaCliente.toFixed(2)}</strong>
+                  </span>
+                )}
+              </div>
+              
+            </div>
           </div>
         </div>
 
         {/* Seção Produtos */}
-        <div className="card">
-          <h3>Adicionar Produtos</h3>
-          
-          <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr auto', gap: '12px', alignItems: 'end' }}>
+        <div className="card highlight">
+          <div className="card-title">
+            <h3>Adicionar Produtos</h3>
+            <span className="badge badge-primary">Itens</span>
+          </div>
+
+          <div className="produtos-grid">
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Produto</label>
-              <select 
-                value={produtoSelecionado}
-                onChange={(e) => setProdutoSelecionado(e.target.value)}
-              >
+              <select value={produtoSelecionado} onChange={(e) => setProdutoSelecionado(e.target.value)}>
                 <option value="">Selecione...</option>
-                {produtos.map(p => (
+                {produtos.map((p) => (
                   <option key={p.id} value={p.id}>
-                    {p.nome} - R$ {p.preco_venda.toFixed(2)}
+                    {p.nome} — R$ {p.preco_venda.toFixed(2)}
                   </option>
                 ))}
               </select>
@@ -237,8 +265,8 @@ export default function VendaOnline() {
 
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Quantidade</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 min="1"
                 value={quantidade}
                 onChange={(e) => setQuantidade(parseInt(e.target.value) || 1)}
@@ -247,8 +275,8 @@ export default function VendaOnline() {
 
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label>Desconto (R$)</label>
-              <input 
-                type="number" 
+              <input
+                type="number"
                 min="0"
                 step="0.01"
                 value={desconto}
@@ -258,76 +286,77 @@ export default function VendaOnline() {
               />
             </div>
 
-            <button className="btn-secondary" onClick={adicionarItem}>
-              Adicionar
+            <button className="btn btn-secondary" onClick={adicionarItem}>
+              + Adicionar
             </button>
           </div>
 
           {produtoAtual && (
-            <div style={{ marginTop: '12px', padding: '8px', background: '#f8f9fa', borderRadius: '4px' }}>
-              <small>
-                Preço: R$ {produtoAtual.preco_venda.toFixed(2)} | 
-                Estoque: {produtoAtual.estoque} | 
-                Permite desconto: {produtoAtual.permite_desconto ? 'Sim' : 'Não'}
-              </small>
+            <div className="produto-info">
+              <div className="produto-info-item">
+                <span className="muted">Preço</span>
+                <strong>R$ {produtoAtual.preco_venda.toFixed(2)}</strong>
+              </div>
+              <div className="produto-info-item">
+                <span className="muted">Estoque</span>
+                <strong>{produtoAtual.estoque}</strong>
+              </div>
+              <div className="produto-info-item">
+                <span className="muted">Permite desconto</span>
+                <strong>{produtoAtual.permite_desconto ? 'Sim' : 'Não'}</strong>
+              </div>
             </div>
           )}
 
           {/* Lista de Itens */}
           {itens.length > 0 && (
             <>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Produto</th>
-                    <th>Qtd</th>
-                    <th>Preço Unit.</th>
-                    <th>Desconto</th>
-                    <th>Subtotal</th>
-                    <th></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {itens.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.produto_nome}</td>
-                      <td>{item.quantidade}</td>
-                      <td>R$ {item.preco_unitario.toFixed(2)}</td>
-                      <td>R$ {item.desconto.toFixed(2)}</td>
-                      <td>R$ {item.subtotal.toFixed(2)}</td>
-                      <td>
-                        <button 
-                          className="btn-danger" 
-                          onClick={() => removerItem(index)}
-                          style={{ padding: '4px 8px', fontSize: '12px' }}
-                        >
-                          Remover
-                        </button>
-                      </td>
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Produto</th>
+                      <th>Qtd</th>
+                      <th>Preço Unit.</th>
+                      <th>Desconto</th>
+                      <th>Subtotal</th>
+                      <th style={{ textAlign: 'right' }}>Ações</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {itens.map((item, index) => (
+                      <tr key={index}>
+                        <td className="td-strong">{item.produto_nome}</td>
+                        <td>{item.quantidade}</td>
+                        <td>R$ {item.preco_unitario.toFixed(2)}</td>
+                        <td>R$ {item.desconto.toFixed(2)}</td>
+                        <td className="td-strong">R$ {item.subtotal.toFixed(2)}</td>
+                        <td style={{ textAlign: 'right' }}>
+                          <button className="btn btn-danger btn-sm" onClick={() => removerItem(index)}>
+                            Remover
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-              <div className="total-venda">
-                Total: R$ {calcularTotal().toFixed(2)}
+              <div className="total-area">
+                <span>Total</span>
+                <strong>R$ {calcularTotal().toFixed(2)}</strong>
               </div>
             </>
           )}
         </div>
 
         {/* Mensagens */}
-        {erro && <div className="card" style={{ background: '#fee', color: '#c33' }}>{erro}</div>}
-        {mensagem && <div className="card" style={{ background: '#efe', color: '#3c3' }}>{mensagem}</div>}
+        {erro && <div className="alert alert-error">{erro}</div>}
+        {mensagem && <div className="alert alert-success">{mensagem}</div>}
 
         {/* Botão Lançar */}
-        <div style={{ textAlign: 'center' }}>
-          <button 
-            className="btn-primary" 
-            onClick={lancarVenda}
-            disabled={carregando}
-            style={{ padding: '16px 48px', fontSize: '18px' }}
-          >
+        <div className="footer-action">
+          <button className="btn btn-primary btn-lg" onClick={lancarVenda} disabled={carregando}>
             {carregando ? 'Lançando...' : 'Lançar Venda'}
           </button>
         </div>
