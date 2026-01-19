@@ -48,4 +48,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       }
     }
   }
+  /**
+   * Executa uma query e retorna apenas os dados (rows)
+   */
+  async query(sql: string, binds: any[] = [], options: any = {}): Promise<any[]> {
+    const result = await this.execute(sql, binds, options);
+    return result.rows || [];
+  }
 }

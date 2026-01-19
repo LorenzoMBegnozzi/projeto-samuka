@@ -48,6 +48,10 @@ let DatabaseService = class DatabaseService {
             }
         }
     }
+    async query(sql, binds = [], options = {}) {
+        const result = await this.execute(sql, binds, options);
+        return result.rows || [];
+    }
 };
 exports.DatabaseService = DatabaseService;
 exports.DatabaseService = DatabaseService = __decorate([

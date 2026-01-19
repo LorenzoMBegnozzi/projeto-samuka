@@ -17,6 +17,7 @@ const cliente_module_1 = require("./cliente/cliente.module");
 const produto_module_1 = require("./produto/produto.module");
 const venda_online_module_1 = require("./venda-online/venda-online.module");
 const app_controller_1 = require("./app.controller");
+const relatorios_module_1 = require("./relatorios/relatorios.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -34,6 +35,7 @@ exports.AppModule = AppModule = __decorate([
             cliente_module_1.ClienteModule,
             produto_module_1.ProdutoModule,
             venda_online_module_1.VendaOnlineModule,
+            relatorios_module_1.RelatoriosModule,
         ],
         controllers: [app_controller_1.AppController],
     })

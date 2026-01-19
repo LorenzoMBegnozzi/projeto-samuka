@@ -5,6 +5,13 @@ import api from '../services/api';
 import '../styles/relatorios.css';
 
 export default function RelatorioVendasPeriodo() {
+    // Função utilitária para formatar data yyyy-mm-dd para dd/mm/aaaa
+    function formatarData(dataStr) {
+      if (!dataStr) return '';
+      const [ano, mes, dia] = dataStr.split('-');
+      if (!ano || !mes || !dia) return dataStr;
+      return `${dia}/${mes}/${ano}`;
+    }
   const navigate = useNavigate();
   const { usuario, logout } = useAuth();
 
@@ -130,26 +137,27 @@ export default function RelatorioVendasPeriodo() {
                 <table>
                   <thead>
                     <tr>
-                      <th>Referência</th>
-                      <th>Qtd. Vendas</th>
-                      <th>Total (R$)</th>
+                      <th>Data da Venda</th>
+                      <th>Valor da Venda (R$)</th>
+                      <th>Empresa</th>
+                      <th>Vendedor</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dados.map((row, idx) => (
                       <tr key={idx}>
-                        <td className="rep-strong">{row.referencia ?? '-'}</td>
-                        <td>{row.quantidade_vendas ?? 0}</td>
-                        <td className="rep-strong">R$ {(Number(row.total_vendas) || 0).toFixed(2)}</td>
+                        <td className="rep-strong">{row.data_venda ? formatarData(row.data_venda) : '-'}</td>
+                        <td className="rep-strong">R$ {(Number(row.valor_venda) || 0).toFixed(2)}</td>
+                        <td>{row.empresa ?? '-'}</td>
+                        <td>{row.vendedor ?? '-'}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-
               <div className="rep-total">
                 <span>Total do período</span>
-                <strong>R$ {totalPeriodo.toFixed(2)}</strong>
+                <strong>R$ {dados.reduce((acc, item) => acc + (Number(item.valor_venda) || 0), 0).toFixed(2)}</strong>
               </div>
             </>
           )}
