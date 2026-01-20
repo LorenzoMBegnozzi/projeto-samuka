@@ -1,3 +1,19 @@
+@media (max-width: 400px) {
+  .rep-header-left h2 {
+    font-size: 15px;
+  }
+  .rep-card h3 {
+    font-size: 13px;
+  }
+  .rep-btn, .rep-btn-primary {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  .rep-table-wrap th, .rep-table-wrap td {
+    font-size: 11px;
+    padding: 8px;
+  }
+}
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;
@@ -71,110 +87,7 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  padding: 8px 12px;
-  border-radius: 999px;
-  font-size: 14px;
-}
 
-.rep-user-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-}
-
-/* Card */
-.rep-card {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: var(--shadow-sm);
-}
-
-.rep-highlight {
-  border-left: 5px solid var(--primary);
-}
-
-.rep-card-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.rep-card h3 {
-  font-size: 16px;
-  font-weight: 900;
-}
-
-/* Form */
-.rep-form-group {
-  margin-bottom: 16px;
-}
-
-.rep-form-group label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
-  font-weight: 900;
-  color: var(--muted);
-}
-
-.rep-form-group input {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  font-size: 14px;
-  background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.rep-form-group input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
-}
-
-.rep-grid-3 {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 12px;
-  align-items: end;
-}
-
-@media (max-width: 900px) {
-  .rep-grid-3 {
-    grid-template-columns: 1fr;
-    align-items: stretch;
-  }
-}
-
-/* Buttons */
-.rep-btn {
-  padding: 12px 14px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  font-weight: 900;
-  font-size: 14px;
-  cursor: pointer;
-  transition: filter 0.15s ease, background 0.15s ease, transform 0.05s ease;
-}
-
-.rep-btn:active {
-  transform: scale(0.99);
-}
-
-.rep-btn-primary {
-  background: var(--primary);
-  color: #fff;
-}
-
-.rep-btn-primary:hover {
   background: var(--primary-dark);
 }
 

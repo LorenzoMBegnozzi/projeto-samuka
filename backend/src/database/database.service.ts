@@ -6,9 +6,8 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
   private pool: oracledb.Pool;
 
   async onModuleInit() {
-    // Configurar Oracle para retornar números como Number (não String)
     oracledb.fetchAsString = [];
-    
+
     this.pool = await oracledb.createPool({
       user: process.env.ORACLE_USER || 'VENDA_APP',
       password: process.env.ORACLE_PASSWORD || '123',
@@ -17,7 +16,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       poolMax: 10,
       poolIncrement: 1,
     });
-    
+
     console.log('✅ Pool de conexões Oracle criado');
   }
 
@@ -32,7 +31,11 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
     return this.pool.getConnection();
   }
 
-  async execute(sql: string, binds: any = {}, options: any = {}): Promise<any> {
+  async execute(
+    sql: string,
+    binds: oracledb.BindParameters = {},
+    options: oracledb.ExecuteOptions = {},
+  ): Promise<oracledb.Result<unknown>> {
     let connection: oracledb.Connection;
     try {
       connection = await this.getConnection();
@@ -48,10 +51,15 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       }
     }
   }
+
   /**
    * Executa uma query e retorna apenas os dados (rows)
    */
-  async query(sql: string, binds: any[] = [], options: any = {}): Promise<any[]> {
+  async query(
+    sql: string,
+    binds: oracledb.BindParameters = {},
+    options: oracledb.ExecuteOptions = {},
+  ): Promise<any[]> {
     const result = await this.execute(sql, binds, options);
     return result.rows || [];
   }

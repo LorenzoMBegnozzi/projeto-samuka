@@ -1,3 +1,19 @@
+@media (max-width: 400px) {
+  .login-card {
+    padding: 12px;
+  }
+  .login-brand h1 {
+    font-size: 14px;
+  }
+  .btn, .btn-primary {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  input {
+    font-size: 12px;
+    padding: 8px;
+  }
+}
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;

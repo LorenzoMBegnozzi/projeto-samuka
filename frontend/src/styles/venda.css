@@ -1,3 +1,22 @@
+@media (max-width: 400px) {
+  .header-content h2 {
+    font-size: 15px;
+  }
+  .card h3 {
+    font-size: 13px;
+  }
+  .btn,
+  .btn-primary,
+  .btn-secondary,
+  .btn-danger {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+  th, td {
+    font-size: 11px;
+    padding: 8px;
+  }
+}
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;

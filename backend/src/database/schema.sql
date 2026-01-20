@@ -2,7 +2,9 @@
 -- SCHEMA DO BANCO DE DADOS ORACLE
 -- ========================================
 
--- Tabela de usuários (para login)
+-- =========================
+-- Tabela de usuários
+-- =========================
 CREATE TABLE usuario (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     usuario VARCHAR2(100) UNIQUE NOT NULL,
@@ -11,21 +13,27 @@ CREATE TABLE usuario (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- =========================
 -- Tabela de vendedores
+-- =========================
 CREATE TABLE vendedor (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR2(200) NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- =========================
 -- Tabela de clientes
+-- =========================
 CREATE TABLE cliente (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR2(200) NOT NULL,
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- =========================
 -- Tabela de produtos
+-- =========================
 CREATE TABLE produto (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome VARCHAR2(200) NOT NULL,
@@ -36,7 +44,9 @@ CREATE TABLE produto (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de lançamentos (para calcular dívida do cliente)
+-- =========================
+-- Tabela de lançamentos (dívida do cliente)
+-- =========================
 CREATE TABLE tabela_lancamento (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_cliente NUMBER NOT NULL,
@@ -46,7 +56,9 @@ CREATE TABLE tabela_lancamento (
     CONSTRAINT fk_lancamento_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id)
 );
 
+-- =========================
 -- Tabela cabeçalho venda online
+-- =========================
 CREATE TABLE venda_online (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_vendedor NUMBER NOT NULL,
@@ -56,7 +68,9 @@ CREATE TABLE venda_online (
     CONSTRAINT fk_venda_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id)
 );
 
+-- =========================
 -- Tabela itens venda online
+-- =========================
 CREATE TABLE venda_online_produto (
     id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     id_venda_online NUMBER NOT NULL,
@@ -67,26 +81,58 @@ CREATE TABLE venda_online_produto (
     CONSTRAINT fk_venda_produto_produto FOREIGN KEY (id_produto) REFERENCES produto(id)
 );
 
+-- =========================
+-- Tabela de reservas
+-- =========================
+CREATE TABLE reserva (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_cliente NUMBER NOT NULL,
+    data DATE DEFAULT SYSDATE,
+    valor NUMBER(10,2) NOT NULL,
+    status VARCHAR2(20) DEFAULT 'ATIVA',
+    CONSTRAINT fk_reserva_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id)
+);
+
+CREATE TABLE reserva_produto (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    id_reserva NUMBER NOT NULL,
+    id_produto NUMBER NOT NULL,
+    quantidade NUMBER NOT NULL,
+    preco_unitario NUMBER(10,2) NOT NULL,
+    CONSTRAINT fk_reserva_produto_reserva FOREIGN KEY (id_reserva) REFERENCES reserva(id),
+    CONSTRAINT fk_reserva_produto_produto FOREIGN KEY (id_produto) REFERENCES produto(id)
+);
+
+-- =========================
+-- Tabela financeira (caixa)
+-- =========================
+CREATE TABLE financeiro (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    data DATE DEFAULT SYSDATE,
+    tipo VARCHAR2(20) CHECK (tipo IN ('ENTRADA', 'SAIDA')) NOT NULL,
+    descricao VARCHAR2(255),
+    valor NUMBER(10,2) NOT NULL
+);
+
 -- ========================================
 -- DADOS DE EXEMPLO
 -- ========================================
 
--- Inserir usuário de teste (senha: admin123)
--- Hash gerado com bcrypt, rounds=10
+-- Usuário admin (senha: admin123)
 INSERT INTO usuario (usuario, senha_hash, nome) 
 VALUES ('admin', '$2b$10$Ner94np7czfNE/k2R7Dau.umoBNLUFLLj5veHXM1GrBZ1WdsHL3Uu', 'Administrador');
 
--- Inserir vendedores
+-- Vendedores
 INSERT INTO vendedor (nome) VALUES ('João Silva');
 INSERT INTO vendedor (nome) VALUES ('Maria Santos');
 INSERT INTO vendedor (nome) VALUES ('Pedro Oliveira');
 
--- Inserir clientes
+-- Clientes
 INSERT INTO cliente (nome) VALUES ('Empresa ABC Ltda');
 INSERT INTO cliente (nome) VALUES ('Comércio XYZ');
 INSERT INTO cliente (nome) VALUES ('Indústria 123');
 
--- Inserir produtos
+-- Produtos
 INSERT INTO produto (nome, custo, preco_venda, permite_desconto, estoque) 
 VALUES ('Produto A', 50.00, 100.00, 'S', 100);
 
@@ -96,7 +142,7 @@ VALUES ('Produto B', 80.00, 150.00, 'N', 50);
 INSERT INTO produto (nome, custo, preco_venda, permite_desconto, estoque) 
 VALUES ('Produto C', 30.00, 60.00, 'S', 200);
 
--- Inserir lançamentos (dívidas) para clientes
+-- Lançamentos (dívidas)
 INSERT INTO tabela_lancamento (id_cliente, valor, vencimento) 
 VALUES (1, 500.00, SYSDATE + 30);
 
@@ -105,5 +151,19 @@ VALUES (1, 750.00, SYSDATE + 60);
 
 INSERT INTO tabela_lancamento (id_cliente, valor, vencimento) 
 VALUES (2, 1200.00, SYSDATE + 15);
+
+-- Reservas
+INSERT INTO reserva (id_cliente, data, valor, status)
+VALUES (1, SYSDATE, 1500.00, 'ATIVA');
+
+INSERT INTO reserva (id_cliente, data, valor, status)
+VALUES (2, SYSDATE - 1, 2200.00, 'ATIVA');
+
+-- Financeiro
+INSERT INTO financeiro (data, tipo, descricao, valor)
+VALUES (SYSDATE, 'ENTRADA', 'Pagamento cliente', 3000.00);
+
+INSERT INTO financeiro (data, tipo, descricao, valor)
+VALUES (SYSDATE, 'SAIDA', 'Pagamento fornecedor', 1800.00);
 
 COMMIT;

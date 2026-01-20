@@ -27,27 +27,27 @@ export default function Home() {
       icon: <HiOutlineShoppingCart />,
       tipo: 'primary',
     },
-    {
-      titulo: 'Clientes',
-      descricao: 'Cadastro e consulta',
-      rota: '/clientes',
-      icon: <HiOutlineUsers />,
-      tipo: 'info',
-    },
-    {
-      titulo: 'Produtos',
-      descricao: 'Estoque e preços',
-      rota: '/produtos',
-      icon: <HiOutlineCube />,
-      tipo: 'info',
-    },
-    {
-      titulo: 'Vendedores',
-      descricao: 'Gestão de vendedores',
-      rota: '/vendedores',
-      icon: <HiOutlineUserGroup />,
-      tipo: 'info',
-    },
+    // {
+    //   titulo: 'Clientes',
+    //   descricao: 'Cadastro e consulta',
+    //   rota: '/clientes',
+    //   icon: <HiOutlineUsers />,
+    //   tipo: 'info',
+    // },
+    // {
+    //   titulo: 'Produtos',
+    //   descricao: 'Estoque e preços',
+    //   rota: '/produtos',
+    //   icon: <HiOutlineCube />,
+    //   tipo: 'info',
+    // },
+    // {
+    //   titulo: 'Vendedores',
+    //   descricao: 'Gestão de vendedores',
+    //   rota: '/vendedores',
+    //   icon: <HiOutlineUserGroup />,
+    //   tipo: 'info',
+    // },
     {
       titulo: 'Vendas por período',
       descricao: 'Relatório de vendas no intervalo',
@@ -62,13 +62,13 @@ export default function Home() {
       icon: <HiOutlineUsers />,
       tipo: 'warning',
     },
-    {
-      titulo: 'Configurações',
-      descricao: 'Preferências do sistema',
-      rota: '/configuracoes',
-      icon: <HiOutlineCog6Tooth />,
-      tipo: 'muted',
-    },
+    // {
+    //   titulo: 'Configurações',
+    //   descricao: 'Preferências do sistema',
+    //   rota: '/configuracoes',
+    //   icon: <HiOutlineCog6Tooth />,
+    //   tipo: 'muted',
+    // },
   ];
 
   return (

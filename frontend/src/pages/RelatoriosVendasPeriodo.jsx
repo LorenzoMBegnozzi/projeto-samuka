@@ -66,32 +66,28 @@ export default function RelatorioVendasPeriodo() {
   };
 
   return (
-    <div className="rep-shell">
-      <header className="rep-header">
-        <div className="rep-header-content">
-          <div className="rep-header-left">
+    <div className="app-shell">
+      <div className="header">
+        <div className="header-content">
+          <div className="header-left">
             <h2>Relatórios</h2>
-            <small className="rep-subtitle">Vendas por período</small>
+            <small className="header-subtitle">Vendas por período</small>
           </div>
-
-          <div className="rep-header-right">
-            <span className="rep-user-pill">
-              <span className="rep-user-dot" />
+          <div className="header-right">
+            <span className="user-pill">
+              <span className="user-dot" />
               Olá, <strong>{usuario?.nome}</strong>
             </span>
-
-            <button className="rep-btn rep-btn-ghost" onClick={() => navigate('/home')}>
+            <button className="btn btn-ghost" onClick={() => navigate('/home')}>
               Home
             </button>
-
-            <button className="rep-btn rep-btn-ghost" onClick={handleLogout}>
+            <button className="btn btn-ghost" onClick={handleLogout}>
               Sair
             </button>
           </div>
         </div>
-      </header>
-
-      <main className="rep-container">
+      </div>
+      <main className="container">
         <div className="rep-card rep-highlight">
           <div className="rep-card-title">
             <h3>Filtro</h3>
@@ -131,33 +127,70 @@ export default function RelatorioVendasPeriodo() {
 
           {erro && <div className="rep-alert rep-alert-error">{erro}</div>}
 
-          {dados.length > 0 && (
+           {dados.length > 0 && (
             <>
               <div className="rep-table-wrap">
                 <table>
                   <thead>
                     <tr>
-                      <th>Data da Venda</th>
-                      <th>Valor da Venda (R$)</th>
-                      <th>Empresa</th>
-                      <th>Vendedor</th>
+                      <th>Data</th>
+                      <th style={{textAlign: 'right'}}>Venda</th>
+                      <th style={{textAlign: 'right'}}>Reserva</th>
+                      <th style={{textAlign: 'right'}}>Custo</th>
+                      <th style={{textAlign: 'right'}}>Financeiro</th>
+                      <th style={{textAlign: 'right'}}>Total</th>
+                      <th style={{textAlign: 'right'}}>%S/F</th>
                     </tr>
                   </thead>
                   <tbody>
                     {dados.map((row, idx) => (
                       <tr key={idx}>
-                        <td className="rep-strong">{row.data_venda ? formatarData(row.data_venda) : '-'}</td>
-                        <td className="rep-strong">R$ {(Number(row.valor_venda) || 0).toFixed(2)}</td>
-                        <td>{row.empresa ?? '-'}</td>
-                        <td>{row.vendedor ?? '-'}</td>
+                        <td className="rep-strong">{row.data ? formatarData(row.data) : '-'}</td>
+                        <td style={{textAlign: 'right'}}>
+                          {(Number(row.venda) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style={{textAlign: 'right'}}>
+                          {(Number(row.reserva) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style={{textAlign: 'right'}}>
+                          {(Number(row.custo) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style={{textAlign: 'right'}}>
+                          {(Number(row.financeiro) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style={{textAlign: 'right'}} className="rep-strong">
+                          {(Number(row.total) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        </td>
+                        <td style={{textAlign: 'right'}}>
+                          {(Number(row.percentual_sf) || 0).toFixed(2)}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
+                  <tfoot>
+                    <tr style={{fontWeight: 'bold', borderTop: '2px solid #ddd'}}>
+                      <td>Total</td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.reduce((acc, item) => acc + (Number(item.venda) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.reduce((acc, item) => acc + (Number(item.reserva) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.reduce((acc, item) => acc + (Number(item.custo) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.reduce((acc, item) => acc + (Number(item.financeiro) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.reduce((acc, item) => acc + (Number(item.total) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}}>
+                        {dados.length > 0 ? (dados.reduce((acc, item) => acc + (Number(item.percentual_sf) || 0), 0) / dados.length).toFixed(2) : '0.00'}
+                      </td>
+                    </tr>
+                  </tfoot>
                 </table>
-              </div>
-              <div className="rep-total">
-                <span>Total do período</span>
-                <strong>R$ {dados.reduce((acc, item) => acc + (Number(item.valor_venda) || 0), 0).toFixed(2)}</strong>
               </div>
             </>
           )}

@@ -167,6 +167,10 @@ export default function VendaOnline() {
     navigate('/');
   };
 
+  const handleHome = () => {
+    navigate('/home');
+  };
+
   return (
     <div className="app-shell">
       <div className="header">
@@ -181,6 +185,10 @@ export default function VendaOnline() {
               <span className="user-dot" />
               Olá, <strong>{usuario?.nome}</strong>
             </span>
+
+            <button className="btn btn-ghost" onClick={handleHome}>
+              Home
+            </button>
 
             <button className="btn btn-ghost" onClick={handleLogout}>
               Sair

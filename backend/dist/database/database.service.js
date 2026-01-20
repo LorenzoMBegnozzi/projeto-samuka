@@ -48,7 +48,7 @@ let DatabaseService = class DatabaseService {
             }
         }
     }
-    async query(sql, binds = [], options = {}) {
+    async query(sql, binds = {}, options = {}) {
         const result = await this.execute(sql, binds, options);
         return result.rows || [];
     }

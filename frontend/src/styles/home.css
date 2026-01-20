@@ -1,3 +1,19 @@
+@media (max-width: 400px) {
+  .home-title {
+    font-size: 16px;
+  }
+  .home-tile-title {
+    font-size: 13px;
+  }
+  .home-tile {
+    padding: 10px;
+    font-size: 12px;
+  }
+  .home-btn {
+    font-size: 12px;
+    padding: 8px 10px;
+  }
+}
 :root {
   --primary: #2563eb;
   --primary-dark: #1e40af;
