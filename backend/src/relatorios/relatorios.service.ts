@@ -104,6 +104,7 @@ export class RelatoriosService {
 
     const query = `
       SELECT
+        TO_CHAR(TRUNC(vo.data), 'DD/MM/YYYY') as data,
         c.nome as cliente_nome,
         COUNT(vo.id) as qtd_vendas,
         NVL(SUM(vop.quantidade * vop.preco_unitario), 0) as total_compras
@@ -111,8 +112,8 @@ export class RelatoriosService {
       LEFT JOIN venda_online_produto vop ON vop.id_venda_online = vo.id
       INNER JOIN cliente c ON c.id = vo.id_cliente
       WHERE TRUNC(vo.data) BETWEEN TO_DATE(:dataInicio, 'DD/MM/YYYY') AND TO_DATE(:dataFim, 'DD/MM/YYYY')
-      GROUP BY c.nome
-      ORDER BY total_compras DESC
+      GROUP BY TO_CHAR(TRUNC(vo.data), 'DD/MM/YYYY'), c.nome
+      ORDER BY data DESC, total_compras DESC
     `;
 
     const rows = await this.db.query(query, {
@@ -121,6 +122,7 @@ export class RelatoriosService {
     });
 
     return rows.map(row => ({
+      data: row.DATA ?? row.data,
       cliente_nome: row.CLIENTE_NOME ?? row.cliente_nome,
       qtd_vendas: Number(row.QTD_VENDAS ?? row.qtd_vendas),
       total_compras: Number(row.TOTAL_COMPRAS ?? row.total_compras),

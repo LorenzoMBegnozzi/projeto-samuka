@@ -15,8 +15,16 @@ export default function RelatorioVendasPeriodo() {
   const navigate = useNavigate();
   const { usuario, logout } = useAuth();
 
-  const [dataInicio, setDataInicio] = useState('');
-  const [dataFim, setDataFim] = useState('');
+  // Função para pegar data atual no formato yyyy-mm-dd
+  function getHojeISO() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  }
+  const [dataInicio, setDataInicio] = useState(getHojeISO());
+  const [dataFim, setDataFim] = useState(getHojeISO());
 
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
@@ -51,12 +59,18 @@ export default function RelatorioVendasPeriodo() {
     setMostrarTabela(false);
 
     try {
-      // 🔧 Ajuste o endpoint conforme seu backend
-      // Esperado: lista agregada (ex: por dia ou por vendedor)
-      // Exemplo de retorno:
-      // [{ referencia: "2026-01-10", quantidade_vendas: 12, total_vendas: 1530.50 }]
+      // Converter datas para dd/mm/yyyy
+      const formatarParaDDMMYYYY = (dataStr) => {
+        if (!dataStr) return '';
+        const [ano, mes, dia] = dataStr.split('-');
+        if (!ano || !mes || !dia) return dataStr;
+        return `${dia}/${mes}/${ano}`;
+      };
+      const dataInicioFmt = formatarParaDDMMYYYY(dataInicio);
+      const dataFimFmt = formatarParaDDMMYYYY(dataFim);
+
       const res = await api.get('/relatorios/vendas-por-periodo', {
-        params: { data_inicio: dataInicio, data_fim: dataFim },
+        params: { data_inicio: dataInicioFmt, data_fim: dataFimFmt },
       });
 
       setDados(Array.isArray(res.data) ? res.data : []);

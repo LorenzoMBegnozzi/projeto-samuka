@@ -19,7 +19,7 @@ export default function VendaOnline() {
 
   const [itens, setItens] = useState([]);
   const [produtoSelecionado, setProdutoSelecionado] = useState('');
-  const [quantidade, setQuantidade] = useState(1);
+  const [quantidade, setQuantidade] = useState('1');
   const [desconto, setDesconto] = useState(0);
 
   const [carregando, setCarregando] = useState(false);
@@ -277,7 +277,7 @@ export default function VendaOnline() {
                 type="number"
                 min="1"
                 value={quantidade}
-                onChange={(e) => setQuantidade(parseInt(e.target.value) || 1)}
+                onChange={(e) => setQuantidade(e.target.value)}
               />
             </div>
 

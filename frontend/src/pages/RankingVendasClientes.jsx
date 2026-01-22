@@ -7,8 +7,16 @@ import '../styles/ranking-vendas.css';
 import '../styles/relatorios.css';
 
 export default function RankingVendasClientes() {
-  const [dataInicio, setDataInicio] = useState('');
-  const [dataFim, setDataFim] = useState('');
+  // Função para pegar data atual no formato yyyy-mm-dd
+  function getHojeISO() {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  }
+  const [dataInicio, setDataInicio] = useState(getHojeISO());
+  const [dataFim, setDataFim] = useState(getHojeISO());
   const [ordenacao, setOrdenacao] = useState('valor');
   const [filtroMinimo, setFiltroMinimo] = useState('');
   const [ranking, setRanking] = useState([]);
@@ -27,15 +35,7 @@ export default function RankingVendasClientes() {
     navigate('/home');
   };
 
-  useEffect(() => {
-    const hoje = new Date();
-    const seteDiasAtras = new Date();
-    seteDiasAtras.setDate(hoje.getDate() - 7);
-
-    const toISO = (d) => d.toISOString().split('T')[0];
-    setDataFim(toISO(hoje));
-    setDataInicio(toISO(seteDiasAtras));
-  }, []);
+  // Removido useEffect para não sobrescrever datas iniciais
 
   const totalGeral = useMemo(() => {
     return ranking.reduce((acc, item) => acc + (Number(item.total_compras) || 0), 0);
@@ -49,6 +49,23 @@ export default function RankingVendasClientes() {
 
   const rankingFiltrado = useMemo(() => {
     let dados = [...ranking];
+
+    // Filtrar por data exata se dataInicio === dataFim
+    if (dataInicio && dataFim && dataInicio === dataFim) {
+      // Converter para dd/mm/yyyy
+      const [ano, mes, dia] = dataInicio.split('-');
+      const dataFiltro = `${dia}/${mes}/${ano}`;
+      dados = dados.filter(item => {
+        // item.data pode ser dd/mm/yyyy ou yyyy-mm-dd, então normalizar
+        if (!item.data) return true;
+        let dataItem = item.data;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dataItem)) {
+          const [a, m, d] = dataItem.split('-');
+          dataItem = `${d}/${m}/${a}`;
+        }
+        return dataItem === dataFiltro;
+      });
+    }
 
     if (filtroMinimo) {
       const minimo = Number(filtroMinimo);
@@ -67,7 +84,7 @@ export default function RankingVendasClientes() {
     });
 
     return dados;
-  }, [ranking, ordenacao, filtroMinimo]);
+  }, [ranking, ordenacao, filtroMinimo, dataInicio, dataFim]);
 
   const getMedalhaClasse = (posicao) => {
     if (posicao === 1) return 'gold';
@@ -99,10 +116,20 @@ export default function RankingVendasClientes() {
     setRanking([]);
 
     try {
+      // Converter datas para dd/mm/yyyy
+      const formatarParaDDMMYYYY = (dataStr) => {
+        if (!dataStr) return '';
+        const [ano, mes, dia] = dataStr.split('-');
+        if (!ano || !mes || !dia) return dataStr;
+        return `${dia}/${mes}/${ano}`;
+      };
+      const dataInicioFmt = formatarParaDDMMYYYY(dataInicio);
+      const dataFimFmt = formatarParaDDMMYYYY(dataFim);
+
       const res = await api.get('/relatorios/ranking-clientes', {
         params: {
-          data_inicio: dataInicio,
-          data_fim: dataFim,
+          data_inicio: dataInicioFmt,
+          data_fim: dataFimFmt,
         },
       });
 
