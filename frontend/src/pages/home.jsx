@@ -73,16 +73,16 @@ export default function Home() {
 
   return (
     <div className="home-shell">
-      <header className="home-header">
-        <div className="home-header-content">
-          <div className="home-header-left">
+      <div className="header">
+        <div className="header-content">
+          <div className="header-left">
             <h2>Dashboard</h2>
-            <small className="home-subtitle">Atalhos rápidos do sistema</small>
+            <small className="header-subtitle">Atalhos rápidos do sistema</small>
           </div>
 
-          <div className="home-header-right">
-            <span className="home-user-pill">
-              <span className="home-user-dot" />
+          <div className="header-right">
+            <span className="user-pill">
+              <span className="user-dot" />
               Olá, <strong>{usuario?.nome}</strong>
             </span>
 
@@ -91,7 +91,7 @@ export default function Home() {
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       <main className="home-container">
         <div className="home-topbar">

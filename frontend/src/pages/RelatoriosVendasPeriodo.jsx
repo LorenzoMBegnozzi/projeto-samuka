@@ -21,6 +21,7 @@ export default function RelatorioVendasPeriodo() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState('');
   const [dados, setDados] = useState([]);
+  const [mostrarTabela, setMostrarTabela] = useState(false);
 
   const totalPeriodo = useMemo(() => {
     return dados.reduce((acc, item) => acc + (Number(item.total_vendas) || 0), 0);
@@ -47,6 +48,7 @@ export default function RelatorioVendasPeriodo() {
     setCarregando(true);
     setErro('');
     setDados([]);
+    setMostrarTabela(false);
 
     try {
       // 🔧 Ajuste o endpoint conforme seu backend
@@ -127,72 +129,78 @@ export default function RelatorioVendasPeriodo() {
 
           {erro && <div className="rep-alert rep-alert-error">{erro}</div>}
 
-           {dados.length > 0 && (
-            <>
-              <div className="rep-table-wrap">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Data</th>
-                      <th style={{textAlign: 'right'}}>Venda</th>
-                      <th style={{textAlign: 'right'}}>Reserva</th>
-                      <th style={{textAlign: 'right'}}>Custo</th>
-                      <th style={{textAlign: 'right'}}>Financeiro</th>
-                      <th style={{textAlign: 'right'}}>Total</th>
-                      <th style={{textAlign: 'right'}}>%S/F</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dados.map((row, idx) => (
-                      <tr key={idx}>
-                        <td className="rep-strong">{row.data ? formatarData(row.data) : '-'}</td>
-                        <td style={{textAlign: 'right'}}>
-                          {(Number(row.venda) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </td>
-                        <td style={{textAlign: 'right'}}>
-                          {(Number(row.reserva) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </td>
-                        <td style={{textAlign: 'right'}}>
-                          {(Number(row.custo) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </td>
-                        <td style={{textAlign: 'right'}}>
-                          {(Number(row.financeiro) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </td>
-                        <td style={{textAlign: 'right'}} className="rep-strong">
-                          {(Number(row.total) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                        </td>
-                        <td style={{textAlign: 'right'}}>
-                          {(Number(row.percentual_sf) || 0).toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                  <tfoot>
-                    <tr style={{fontWeight: 'bold', borderTop: '2px solid #ddd'}}>
-                      <td>Total</td>
+          {dados.length > 0 && !mostrarTabela && (
+            <div style={{textAlign: 'center', marginTop: 24}}>
+              <button className="rep-btn rep-btn-primary" onClick={() => setMostrarTabela(true)}>
+                Ver relatório
+              </button>
+            </div>
+          )}
+
+          {dados.length > 0 && mostrarTabela && (
+            <div className="rep-table-wrap relatorio-horizontal">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th style={{textAlign: 'right'}}>Venda</th>
+                    <th style={{textAlign: 'right'}}>Reserva</th>
+                    <th style={{textAlign: 'right'}}>Custo</th>
+                    <th style={{textAlign: 'right'}}>Financeiro</th>
+                    <th style={{textAlign: 'right'}}>Total</th>
+                    <th style={{textAlign: 'right'}}>%S/F</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dados.map((row, idx) => (
+                    <tr key={idx}>
+                      <td className="rep-strong">{row.data ? formatarData(row.data) : '-'}</td>
                       <td style={{textAlign: 'right'}}>
-                        {dados.reduce((acc, item) => acc + (Number(item.venda) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        {(Number(row.venda) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </td>
                       <td style={{textAlign: 'right'}}>
-                        {dados.reduce((acc, item) => acc + (Number(item.reserva) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        {(Number(row.reserva) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </td>
                       <td style={{textAlign: 'right'}}>
-                        {dados.reduce((acc, item) => acc + (Number(item.custo) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        {(Number(row.custo) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </td>
                       <td style={{textAlign: 'right'}}>
-                        {dados.reduce((acc, item) => acc + (Number(item.financeiro) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                        {(Number(row.financeiro) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                      </td>
+                      <td style={{textAlign: 'right'}} className="rep-strong">
+                        {(Number(row.total) || 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                       </td>
                       <td style={{textAlign: 'right'}}>
-                        {dados.reduce((acc, item) => acc + (Number(item.total) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
-                      </td>
-                      <td style={{textAlign: 'right'}}>
-                        {dados.length > 0 ? (dados.reduce((acc, item) => acc + (Number(item.percentual_sf) || 0), 0) / dados.length).toFixed(2) : '0.00'}
+                        {(Number(row.percentual_sf) || 0).toFixed(2)}
                       </td>
                     </tr>
-                  </tfoot>
-                </table>
-              </div>
-            </>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr style={{fontWeight: 'bold', borderTop: '2px solid #ddd'}}>
+                    <td>Total</td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.reduce((acc, item) => acc + (Number(item.venda) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.reduce((acc, item) => acc + (Number(item.reserva) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.reduce((acc, item) => acc + (Number(item.custo) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.reduce((acc, item) => acc + (Number(item.financeiro) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.reduce((acc, item) => acc + (Number(item.total) || 0), 0).toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                    <td style={{textAlign: 'right'}}>
+                      {dados.length > 0 ? (dados.reduce((acc, item) => acc + (Number(item.percentual_sf) || 0), 0) / dados.length).toFixed(2) : '0.00'}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
           )}
 
           {!carregando && !erro && dados.length === 0 && (

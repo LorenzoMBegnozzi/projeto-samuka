@@ -211,23 +211,23 @@ export default function RankingVendasClientes() {
           <h3 className="ranking-filters-title">Filtros e Ordenação</h3>
           <div className="ranking-filters-grid">
             <div className="ranking-form-group">
-              <label className="ranking-form-label">Data Inicial</label>
-              <input
-                type="date"
-                value={dataInicio}
-                onChange={(e) => setDataInicio(e.target.value)}
-                className="ranking-input"
-              />
+                <label className="ranking-form-label">Data Inicial</label>
+                <input
+                  type="date"
+                  value={dataInicio}
+                  onChange={(e) => setDataInicio(e.target.value)}
+                  className="ranking-input"
+                />
             </div>
 
             <div className="ranking-form-group">
-              <label className="ranking-form-label">Data Final</label>
-              <input
-                type="date"
-                value={dataFim}
-                onChange={(e) => setDataFim(e.target.value)}
-                className="ranking-input"
-              />
+                <label className="ranking-form-label">Data Final</label>
+                <input
+                  type="date"
+                  value={dataFim}
+                  onChange={(e) => setDataFim(e.target.value)}
+                  className="ranking-input"
+                />
             </div>
 
             <div className="ranking-form-group">
